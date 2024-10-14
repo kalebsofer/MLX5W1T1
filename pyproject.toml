@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "mlx5w1t1"
+version = "0.1.0"
+description = ""
+authors = ["Kaleb Sofer <kalebsofer@gmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pandas = "^2.2.3"
+jupyter = "^1.0.0"  # Add this line
+ipykernel = "^6.29.0"  # Add this line if not already present
+sqlalchemy = "^2.0.35"
+psycopg2 = "^2.9.9"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
