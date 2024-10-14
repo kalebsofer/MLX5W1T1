@@ -441,6 +441,7 @@ traitlets = ">=4"
 test = ["pytest"]
 
 [[package]]
+<<<<<<< HEAD
 name = "connectorx"
 version = "0.3.3"
 description = ""
@@ -466,6 +467,8 @@ files = [
 ]
 
 [[package]]
+=======
+>>>>>>> 5c63ad957cdb3ee40404cf9cc6b8195f59863012
 name = "contourpy"
 version = "1.3.0"
 description = "Python library for calculating contours of 2D quadrilateral grids"
@@ -3153,4 +3156,8 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
+<<<<<<< HEAD
 content-hash = "c8700f9f3e6da42c3cb92f7bac13b18205cbc6a4c5413294fb337b44f37ed4db"
+=======
+content-hash = "c842f7ab2d4e44a8eb413710832531e52b9bfda54892191672542c4d37a1ddd7"
+>>>>>>> 5c63ad957cdb3ee40404cf9cc6b8195f59863012

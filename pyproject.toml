@@ -13,10 +13,13 @@ jupyter = "^1.0.0"  # Add this line
 ipykernel = "^6.29.0"  # Add this line if not already present
 sqlalchemy = "^2.0.35"
 psycopg2 = "^2.9.9"
+<<<<<<< HEAD
 polars = "^1.9.0"
 connectorx = "^0.3.3"
 matplotlib = "^3.9.2"
 pyarrow = "^17.0.0"
+=======
+>>>>>>> 5c63ad957cdb3ee40404cf9cc6b8195f59863012
 seaborn = "^0.13.2"
 
 
