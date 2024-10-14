@@ -13,6 +13,7 @@ jupyter = "^1.0.0"  # Add this line
 ipykernel = "^6.29.0"  # Add this line if not already present
 sqlalchemy = "^2.0.35"
 psycopg2 = "^2.9.9"
+seaborn = "^0.13.2"
 
 
 [build-system]
