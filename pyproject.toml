@@ -21,6 +21,7 @@ seaborn = "^0.13.2"
 nltk = "^3.9.1"
 spacy = "3.7"
 gensim = "^4.3.3"
+torch = "^2.4.1"
 
 
 [build-system]
