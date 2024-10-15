@@ -3,6 +3,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Trained models
+./word2vec/models/*
+
+# Data
+./word2vec/data/*
 
 # Distribution / packaging
 .Python
