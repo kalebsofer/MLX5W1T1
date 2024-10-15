@@ -43,27 +43,27 @@ def nltk_tokenize(filename):
     return tokens
 
 # If you want to use spaCy (optional)
-def spacy_tokenize(filename):
-    """
-    Tokenization using spaCy with batch processing for large texts.
-    """
-    try:
-        nlp = spacy.load('en_core_web_sm')
-        nlp.max_length = 15000000  # Increase the max length to handle larger texts
-    except OSError:
-        print("SpaCy model 'en_core_web_sm' not found. Please install it using: python -m spacy download en_core_web_sm")
-        sys.exit(1)
+# def spacy_tokenize(filename):
+#     """
+#     Tokenization using spaCy with batch processing for large texts.
+#     """
+#     try:
+#         nlp = spacy.load('en_core_web_sm')
+#         nlp.max_length = 15000000  # Increase the max length to handle larger texts
+#     except OSError:
+#         print("SpaCy model 'en_core_web_sm' not found. Please install it using: python -m spacy download en_core_web_sm")
+#         sys.exit(1)
     
-    text = read_file(filename)
-    tokens = []
-    chunk_size = 1000000  # Process in chunks of 1 million characters
+#     text = read_file(filename)
+#     tokens = []
+#     chunk_size = 1000000  # Process in chunks of 1 million characters
     
-    for i in range(0, len(text), chunk_size):
-        chunk = text[i:i+chunk_size]
-        doc = nlp(chunk)
-        tokens.extend([token.text for token in doc])
+#     for i in range(0, len(text), chunk_size):
+#         chunk = text[i:i+chunk_size]
+#         doc = nlp(chunk)
+#         tokens.extend([token.text for token in doc])
     
-    return tokens
+#     return tokens
 
 def preprocess(text, lower=True, remove_punctuation=True):
     """
@@ -89,8 +89,8 @@ def tokenize_text(filename, method="simple"):
         return regex_tokenize(filename)
     elif method == "nltk":
         return nltk_tokenize(filename)
-    elif method == "spacy":
-        return spacy_tokenize(filename)
+    # elif method == "spacy":
+    #     return spacy_tokenize(filename)
     else:
         raise ValueError(f"Unsupported tokenization method: {method}")
 
