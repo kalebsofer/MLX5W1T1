@@ -1,5 +1,6 @@
 # Sensitive information
 *.env
+h0oks0c00wttv7
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -82,3 +83,6 @@ celerybeat.pid
 
 # SageMath parsed files
 *.sage.py
+
+# Log files
+nohup.out

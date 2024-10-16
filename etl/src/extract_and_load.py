@@ -38,6 +38,9 @@ def main():
         df = pd.read_sql(query, connection)
     print(df.head())
     # Insert the data into the local denormalized_data table
+
+    # Normalize the data 
+
     df.to_sql('denormalized_data', con=write_engine, if_exists='replace', index=False)
     print("Data loaded successfully into denormalized_data table.")
 
