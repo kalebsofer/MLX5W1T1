@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  postgres:
+  db:
     image: postgres:14
     container_name: etl_postgres
     ports:
@@ -9,7 +9,11 @@ services:
     env_file:
       - .env
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data  # Persist data
+      - ./init_db:/docker-entrypoint-initdb.d  # Initialization scripts
+      - ./sql:/sql  # SQL scripts directory for executing queries later
+    restart: always
 
 volumes:
   pgdata:
+    external: true  # This keeps data even if the container is removed
