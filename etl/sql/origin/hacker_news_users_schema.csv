@@ -1,0 +1,6 @@
+"column_name","data_type","is_nullable"
+"created","timestamp without time zone","YES"
+"karma","integer","YES"
+"submitted","ARRAY","YES"
+"id","character varying","NO"
+"about","text","YES"
