@@ -8,6 +8,7 @@ __pycache__/
 
 # Data
 ./word2vec/data/*
+./etl/titles/titles.txt
 
 # Distribution / packaging
 .Python
