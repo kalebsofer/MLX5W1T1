@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result</title>
+</head>
+
+<body>
+    <h1>Prediction Result</h1>
+    <h2>Article Details:</h2>
+    <p><strong>Title:</strong> {{ article.title }}</p>
+    <p><strong>Author:</strong> {{ article.author }}</p>
+    <p><strong>URL:</strong> {{ article.url }}</p>
+    <p><strong>Date:</strong> {{ article.date }}</p>
+
+    <h2>Prediction:</h2>
+    <p>The predicted value is: <strong>{{ prediction }}</strong></p>
+
+    <a href="/">Submit another article</a>
+</body>
+
+</html>
