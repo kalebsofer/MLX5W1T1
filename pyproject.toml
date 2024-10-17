@@ -22,6 +22,9 @@ nltk = "^3.9.1"
 spacy = "3.7"
 gensim = "^4.3.3"
 torch = "^2.4.1"
+tqdm = "^4.66.5"
+more-itertools = "^10.5.0"
+wandb = "^0.18.3"
 
 
 [build-system]
