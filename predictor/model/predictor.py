@@ -1,3 +1,4 @@
+
 # Define torch predictor model
 import torch
 import torch.nn as nn
@@ -18,13 +19,14 @@ class Predictor(torch.nn.Module):
         super(Predictor, self).__init__()
 
         self.pad_idx = 0
-        self.unk_idx = 1
+        self.unk_idx = emb_weights.shape[0] # is this right? 
         self.embeddings = nn.Embedding(vocab_size + 2, embedding_dim, padding_idx=self.pad_idx)
 
         if emb_weights is not None:
             # Create embeddings matrix, plus pad and unknown vectors
+                # TODO: We don't need this!
             pad_unk_embeds = torch.zeros(2, embedding_dim)
-            extended_weights = torch.cat([pad_unk_embeds, emb_weights], dim=0)
+            extended_weights = torch.cat([emb_weights, pad_unk_embeds], dim=0)
             self.embeddings.weight = nn.Parameter(extended_weights)
         else:
             # TODO: Load pretrained embeddings from file path
@@ -39,7 +41,7 @@ class Predictor(torch.nn.Module):
         #     self.embedding = nn.Embedding(vocab_size, embedding_dim)
 
         self.fc1 = torch.nn.Linear(in_features=embedding_dim, out_features=hidden_dim)
-        # Activation function ?
+        self.relu = nn.ReLU()
         self.fc2 = torch.nn.Linear(in_features=hidden_dim, out_features=output_dim)
         # Dropout layer
         self.dropout = nn.Dropout(0.3)
@@ -77,3 +79,4 @@ if __name__ == "__main__":
     sample_input = torch.randint(0, vocab_size, (32, 20))  # (batch_size, seq_length)
     output = model(sample_input)
     print("Model output shape:", output.shape)  # Should be (batch_size, output_dim)
+

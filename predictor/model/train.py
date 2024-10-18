@@ -2,6 +2,7 @@ import os
 import sys
 import wandb
 import torch
+import psycopg2
 import argparse
 import pandas as pd
 import torch.nn as nn
@@ -71,19 +72,21 @@ print("Predictor initialized")
 wandb.init(project="mlx-w1-upvote-prediction")
 try:
     for epoch in range(EPOCHS):
+        connection = psycopg2.connect(
+            'postgres://sy91dhb:g5t49ao@178.156.142.230:5432/hd64m1ki'
+        )
+        print("Connected to the database successfully")
         model.train()
         epoch_loss = 0.0
 
         # Iteratively fetch data and train the model
         offset = 0
-        window = 1000 # How can we figure out the window size that can 
-                    # be supported by the GPU? Does this matter much? 
         while True:
             if ITERATIONS > -1:
                 print(f"Fetching data: {offset}/{ITERATIONS} times")
             else: 
                 print(f"Fetching ALL the data.")
-            data_chunk = fetch(offset, window)  # Fetch data starting from the current offset
+            data_chunk = fetch(offset, window, connection)  # Fetch data starting from the current offset
             print(offset)
             if data_chunk is None or len(data_chunk) == 0:
                 break
@@ -96,8 +99,10 @@ try:
             df['tkn_title_id'] = df['tkn_title'].apply(
                 lambda x: [vocab_to_int.get(word, 0) for word in x])  # 0 for unknown words, which is <PAD>
 
+            # TODO: THIS CODE BLOCK MAY BE THE SOURCE OF THE ERROR
             # Pad sequences to the desired length
             padded_titles = torch.zeros((len(df), SEQ_LENGTH), dtype=torch.long).to(device)
+            # Put vectors into the padded tensor
             for i, row in enumerate(df['tkn_title_id']):
                 length = min(len(row), SEQ_LENGTH)
                 padded_titles[i, :length] = torch.tensor(row[:length]).to(device)
@@ -106,7 +111,7 @@ try:
             targets = torch.tensor(df['score'].values, dtype=torch.float32).unsqueeze(1).to(device)
 
             # Create DataLoader for training
-            train_dataset = TensorDataset(padded_titles, targets)
+            train_dataset = TensorDataset(padded_titles, targets) # TODO: replace padded_titles with df['tkn_title_id'] as a tensor
             train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
 
             with tqdm(total=len(train_loader), desc=f"Epoch {epoch+1}/{EPOCHS}") as pbar:
@@ -137,6 +142,8 @@ try:
         avg_epoch_loss = epoch_loss / offset
         print(f"Epoch {epoch+1}/{EPOCHS}, Loss: {avg_epoch_loss:.4f}")
     wandb.finish()
+    connection.close()
+    print("Connection closed")
 except Exception as e:
     print(f"Error: {e}")
 

@@ -33,14 +33,17 @@ vocab_to_int, int_to_vocab = load_lookups()
 #   return vocab_to_int, int_to_vocab
 
 
-def fetch(i, window=10):    
+def fetch(i, window=10, connection=None):    
     # Connect to PostgreSQL database
     try:
-        connection = psycopg2.connect(
-            'postgres://sy91dhb:g5t49ao@178.156.142.230:5432/hd64m1ki'
-        )
+        preconnection = True
+        if connection is None:
+            preconnection = False
+            connection = psycopg2.connect(
+                'postgres://sy91dhb:g5t49ao@178.156.142.230:5432/hd64m1ki'
+            )
+            print("Connected to the database successfully")
         cursor = connection.cursor()
-        print("Connected to the database successfully")
         
         # SQL query to fetch relevant data
         query = f"""
@@ -60,10 +63,9 @@ def fetch(i, window=10):
         print(f"Error connecting to the database: {error}")
     
     finally:
-        if connection:
-            cursor.close()
-            connection.close()
-            print("PostgreSQL connection is closed")
+        if not preconnection:
+            connection.close()    
+        print("Data fetch completed")
 
 def preprocess(text: str) -> list[str]:
   text = text.lower()
@@ -79,6 +81,5 @@ def preprocess(text: str) -> list[str]:
   text = text.replace('?',  ' <QUESTION_MARK> ')
   text = text.replace(':',  ' <COLON> ')
   words = text.split()
-  stats = collections.Counter(words)
   words = [word for word in words]
   return words
