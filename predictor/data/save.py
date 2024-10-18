@@ -17,8 +17,7 @@ def save_all_data(connection):
         FROM hacker_news.items
         WHERE title IS NOT NULL 
         AND score IS NOT NULL
-        AND type IN ('story')
-        LIMIT 1000;
+        AND type IN ('story');
     """
     try:
         preconnection = True
