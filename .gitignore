@@ -9,6 +9,9 @@ __pycache__/
 # Data
 text8
 
+# Logs
+wandb/
+
 # Distribution / packaging
 .Python
 build/
