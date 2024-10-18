@@ -152,14 +152,14 @@ try:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             model_path = f"./params/model_{timestamp}_epoch_{epoch+1}_{commit}.pth"
             torch.save(model.state_dict(), model_path)
-            wandb.save(model_path)
-            print(f"Model saved to wandb: {model_path}")
+            # wandb.save(model_path)
+            # print(f"Model saved to wandb: {model_path}")
             
-            # Log the model file to wandb artifacts
-            artifact = wandb.Artifact(f"model-epoch-{epoch+1}", type="model")
-            artifact.add_file(model_path)
-            wandb.log_artifact(artifact)
-            print(f"Model logged as artifact in wandb")
+            # # Log the model file to wandb artifacts
+            # artifact = wandb.Artifact(f"model-epoch-{epoch+1}", type="model")
+            # artifact.add_file(model_path)
+            # wandb.log_artifact(artifact)
+            # print(f"Model logged as artifact in wandb")
 
     wandb.finish()
     connection.close()
