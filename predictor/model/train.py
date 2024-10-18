@@ -162,8 +162,9 @@ try:
             # print(f"Model logged as artifact in wandb")
 
     wandb.finish()
-    connection.close()
-    print("Connection closed")
+    # if connection is not None:
+        # connection.close()
+        # print("Connection closed")
 except Exception as e:
     print(f"Error: {e}")
 
