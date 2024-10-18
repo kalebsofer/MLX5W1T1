@@ -1,8 +1,9 @@
-from fastapi import FastAPI, Form, Request
+from fastapi import FastAPI, Form, Request, File, UploadFile
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from fastapi.responses import HTMLResponse
+import json
 
 from .preprocess import preprocess
 from .predict import predict
@@ -37,7 +38,22 @@ async def upload_article(
     date: str = Form(...),
 ):
     article = Article(title=title, author=author, url=url, date=date)
-    feature_list = preprocess(article)
+    feature_list = preprocess(article.dict(), "title")
+    prediction = predict(feature_list)
+
+    return templates.TemplateResponse(
+        "result.html",
+        {"request": request, "article": article, "prediction": prediction},
+    )
+
+
+@app.post("/upload_json")
+async def upload_json_file(request: Request, file: UploadFile = File(...)):
+    contents = await file.read()
+    json_data = json.loads(contents)
+
+    article = Article(**json_data)
+    feature_list = preprocess(article.dict(), "title")
     prediction = predict(feature_list)
 
     return templates.TemplateResponse(
