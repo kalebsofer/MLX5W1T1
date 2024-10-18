@@ -3,6 +3,16 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Sensitive
+.env
+
+# Data
+text8
+*.parquet
+model/params/*.pth
+
+# Logs
+wandb/
 
 # Distribution / packaging
 .Python
