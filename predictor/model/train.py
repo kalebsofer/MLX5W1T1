@@ -22,12 +22,13 @@ from w2v_model import Word2Vec
 def parse_args():
     parser = argparse.ArgumentParser(description="Train a predictor model")
     parser.add_argument("--epochs", type=int, default=1, help="Number of epochs to train for")
-    parser.add_argument("--batch_size", type=int, default=32, help="Batch size")
-    parser.add_argument("--learning_rate", type=float, default=0.001, help="Learning rate")
-    parser.add_argument("--seq_length", type=int, default=20, help="Length to which sequences will be padded")
+    parser.add_argument("--batch-size", type=int, default=32, help="Batch size")
+    parser.add_argument("--learning-rate", type=float, default=0.001, help="Learning rate")
+    parser.add_argument("--seq-length", type=int, default=20, help="Length to which sequences will be padded")
     parser.add_argument("--window", type=int, default=1000, help="Length to which sequences will be padded")
-    parser.add_argument("--w2v_path", type=str, default="./w2v_epoch_11.pth", help="Length to which sequences will be padded")
+    parser.add_argument("--w2v-path", type=str, default="./w2v_epoch_11.pth", help="Length to which sequences will be padded")
     parser.add_argument("--iterations", type=int, default=2, help="Device to train on") # -1 for all data
+    parser.add_argument("--data-src", type=str, default="parquet", help="Path to the data")
     return parser.parse_args()
 
 args = parse_args()
@@ -41,6 +42,7 @@ EPOCHS = args.epochs
 LEARNING_RATE = args.learning_rate
 SEQ_LENGTH = args.seq_length # Length to which sequences will be padded
 ITERATIONS = args.iterations
+DATA_SRC = args.data_src
 window = args.window
 
 # Parameters
@@ -74,75 +76,77 @@ print("Predictor initialized")
 wandb.init(project="mlx-w1-upvote-prediction")
 try:
     for epoch in range(EPOCHS):
-        connection = psycopg2.connect(
-            'postgres://sy91dhb:g5t49ao@178.156.142.230:5432/hd64m1ki'
-        )
-        print("Connected to the database successfully")
+        if DATA_SRC == "sql":
+            connection = psycopg2.connect(
+                'postgres://sy91dhb:g5t49ao@178.156.142.230:5432/hd64m1ki'
+            )
+            print("Connected to the database successfully")
         model.train()
         epoch_loss = 0.0
 
-        # Iteratively fetch data and train the model
-        offset = 0
-        while True:
-            if ITERATIONS > -1:
-                print(f"Fetching data: {offset}/{ITERATIONS} times")
-            else: 
-                print(f"Fetching ALL the data.")
-            data_chunk = fetch(offset, window, connection)  # Fetch data starting from the current offset
-            print(offset)
-            if data_chunk is None or len(data_chunk) == 0:
-                break
-            if ITERATIONS != 0 and offset == ITERATIONS: # remove this to train on the whole dataset
-                break
-            # Convert fetched data into DataFrame
-            df = pd.DataFrame(data_chunk, columns=['title', 'score'])
+        # # Iteratively fetch data and train the model
+        # offset = 0
+        # while True:
+        #     if DATA_SRC == "sql":
+        #         if ITERATIONS > -1:
+        #             print(f"Fetching data: {offset}/{ITERATIONS} times")
+        #         else: 
+        #             print(f"Fetching ALL the data.")
+        #         data_chunk = fetch(offset, window, connection)  # Fetch data starting from the current offset
 
-            df['tkn_title'] = df['title'].apply(preprocess)
-            df['tkn_title_id'] = df['tkn_title'].apply(
-                lambda x: [vocab_to_int.get(word, 0) for word in x])  # 0 for unknown words, which is <PAD>
+        #         if data_chunk is None or len(data_chunk) == 0:
+        #             break
+        #         if ITERATIONS != 0 and offset == ITERATIONS: # remove this to train on the whole dataset
+        #             break
+        #         # Convert fetched data into DataFrame
+        #         df = pd.DataFrame(data_chunk, columns=['title', 'score'])
 
-            # TODO: THIS CODE BLOCK MAY BE THE SOURCE OF THE ERROR
-            # Pad sequences to the desired length
-            padded_titles = torch.zeros((len(df), SEQ_LENGTH), dtype=torch.long).to(device)
-            # Put vectors into the padded tensor
-            for i, row in enumerate(df['tkn_title_id']):
-                length = min(len(row), SEQ_LENGTH)
-                padded_titles[i, :length] = torch.tensor(row[:length]).to(device)
+        #         df['tkn_title'] = df['title'].apply(preprocess)
+        #         df['tkn_title_id'] = df['tkn_title'].apply(
+        #             lambda x: [vocab_to_int.get(word, 0) for word in x])  # 0 for unknown words, which is <PAD>
+        #     elif DATA_SRC == "parquet":
+        df = pd.read_parquet("../data/tokenized_titles.parquet")
 
-            # Prepare target labels
-            targets = torch.tensor(df['score'].values, dtype=torch.float32).unsqueeze(1).to(device)
+        # Pad sequences to the desired length
+        padded_titles = torch.zeros((len(df), SEQ_LENGTH), dtype=torch.long).to(device)
+        # Put vectors into the padded tensor
+        for i, row in enumerate(df['tkn_title_id']):
+            length = min(len(row), SEQ_LENGTH)
+            padded_titles[i, :length] = torch.tensor(row[:length]).to(device)
 
-            # Create DataLoader for training
-            train_dataset = TensorDataset(padded_titles, targets) # TODO: replace padded_titles with df['tkn_title_id'] as a tensor
-            train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
+        # Prepare target labels
+        targets = torch.tensor(df['score'].values, dtype=torch.float32).unsqueeze(1).to(device)
 
-            with tqdm(total=len(train_loader), desc=f"Epoch {epoch+1}/{EPOCHS}") as pbar:
-                for inputs, labels in train_loader:
-                    # Zero the parameter gradients
-                    optimizer.zero_grad()
+        # Create DataLoader for training
+        train_dataset = TensorDataset(padded_titles, targets) # TODO: replace padded_titles with df['tkn_title_id'] as a tensor
+        train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
 
-                    # Forward pass
-                    inputs, labels = inputs.to(device), labels.to(device)
-                    outputs = model(inputs)
-                    labels = labels.squeeze(-1)
+        with tqdm(total=len(train_loader), desc=f"Epoch {epoch+1}/{EPOCHS}") as pbar:
+            for inputs, labels in train_loader:
+                # Zero the parameter gradients
+                optimizer.zero_grad()
 
-                    # Compute the loss
-                    loss = criterion(outputs, labels)
-                    loss.backward()
-                    optimizer.step()
+                # Forward pass
+                inputs, labels = inputs.to(device), labels.to(device)
+                outputs = model(inputs)
+                labels = labels.squeeze(-1)
 
-                    # Accumulate loss for the epoch
-                    epoch_loss += loss.item() * inputs.size(0)
-                    pbar.update(1)
-                    pbar.set_postfix(loss=loss.item())
-                wandb.log({"loss": loss.item()})
+                # Compute the loss
+                loss = criterion(outputs, labels)
+                loss.backward()
+                optimizer.step()
 
-            # Update offset for the next chunk
-            offset += 1
+                # Accumulate loss for the epoch
+                epoch_loss += loss.item() * inputs.size(0)
+                pbar.update(1)
+                pbar.set_postfix(loss=loss.item())
+            wandb.log({"loss": loss.item()})
 
+            # offset += 1
+        
         # Average epoch loss
-        avg_epoch_loss = epoch_loss / offset
-        print(f"Epoch {epoch+1}/{EPOCHS}, Loss: {avg_epoch_loss:.4f}")
+        # avg_epoch_loss = epoch_loss / offset
+        # print(f"Epoch {epoch+1}/{EPOCHS}, Loss: {avg_epoch_loss:.4f}")
         if epoch == EPOCHS % 5 or epoch == EPOCHS - 1:
             commit = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('ascii').strip()
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
