@@ -37,6 +37,7 @@ batch_size = 500_000
 print("Loading dataset")
 load_path = "dataset/processed/text8_set.pth"
 input_tensor, target_tensor, negs_tensor = torch.load(load_path)
+
 dataset = torch.utils.data.TensorDataset(input_tensor, target_tensor, negs_tensor)
 dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
 print("Loaded dataset")
@@ -65,7 +66,7 @@ for epoch in range(500):
         optimizer.step()
         wandb.log({"loss": loss.item()})
 
-    if (not (epoch + 1) % 5):
+    if not (epoch + 1) % 5:
         save_path = f"checkpoints/w2v_epoch_{epoch+1}.pth"
         torch.save(model.state_dict(), save_path)
 wandb.finish()
