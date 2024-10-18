@@ -4,10 +4,12 @@ import wandb
 import torch
 import psycopg2
 import argparse
+import subprocess
 import pandas as pd
 import torch.nn as nn
 from tqdm import tqdm
 import torch.optim as optim
+from datetime import datetime
 from torch.utils.data import DataLoader, TensorDataset
 
 # Add the parent directory and current directory to the Python path
@@ -25,7 +27,7 @@ def parse_args():
     parser.add_argument("--seq_length", type=int, default=20, help="Length to which sequences will be padded")
     parser.add_argument("--window", type=int, default=1000, help="Length to which sequences will be padded")
     parser.add_argument("--w2v_path", type=str, default="./w2v_epoch_11.pth", help="Length to which sequences will be padded")
-    parser.add_argument("--iterations", type=int, default=5, help="Device to train on") # -1 for all data
+    parser.add_argument("--iterations", type=int, default=2, help="Device to train on") # -1 for all data
     return parser.parse_args()
 
 args = parse_args()
@@ -141,6 +143,10 @@ try:
         # Average epoch loss
         avg_epoch_loss = epoch_loss / offset
         print(f"Epoch {epoch+1}/{EPOCHS}, Loss: {avg_epoch_loss:.4f}")
+        if epoch == EPOCHS % 5 or epoch == EPOCHS - 1:
+            commit = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('ascii').strip()
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            torch.save(model.state_dict(), f"./params/model_{timestamp}_epoch_{epoch+1}_{commit}.pth")
     wandb.finish()
     connection.close()
     print("Connection closed")

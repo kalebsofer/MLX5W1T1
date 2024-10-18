@@ -55,6 +55,7 @@ def fetch(i, window=10, connection=None):
             LIMIT {window}
             OFFSET {i * window};
         """
+        print(f'Fetching next {window} records: {i * window} to {i * window + window}')
         cursor.execute(query)
         records = cursor.fetchall()
         return records
